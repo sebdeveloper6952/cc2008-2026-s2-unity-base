@@ -10,7 +10,6 @@ public class CourierCentral : MonoBehaviour
     void Start()
     {
         Hire<CarCourier>("Ana");
-        Hire<CarCourier>("Luis");
         Hire<BikeCourier>("Sofía");
         Hire<NightCarCourier>("Marta");
         Hire<NightBikeCourier>("Diego");

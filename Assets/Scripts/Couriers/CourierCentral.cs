@@ -5,21 +5,25 @@ public class CourierCentral : MonoBehaviour
 {
     [SerializeField] Transform[] parkingSpots;
 
-    public List<CarCourier> Couriers { get; } = new List<CarCourier>();
+    public List<Courier> Couriers { get; } = new List<Courier>();
 
     void Start()
     {
-        Hire<CarCourier>("Ana");
+        Hire<Courier>("Ana", new Car(), new DayShift());
+        Hire<Courier>("Javier", new Bike(), new DayShift());
+        
+        Hire<Courier>("Otto", new Bike(), new NightShift());
+        Hire<Courier>("Alex", new Car(), new NightShift());
     }
 
-    void Hire<T>(string name) where T : CarCourier
+    void Hire<T>(string name, IVehicle vehicle, IShift shift) where T : Courier
     {
         T courier = new GameObject(name).AddComponent<T>();
-        courier.Setup(name, parkingSpots[Couriers.Count]);
+        courier.Setup(name, vehicle, shift, parkingSpots[Couriers.Count]);
         Couriers.Add(courier);
     }
 
-    public bool Assign(Order order, CarCourier courier)
+    public bool Assign(Order order, Courier courier)
     {
         if (!courier.IsAvailable || !courier.IsOnDuty(GameClock.Instance.IsNight)) return false;
         order.AssignTo(courier.CourierName);

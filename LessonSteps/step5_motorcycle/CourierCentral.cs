@@ -10,7 +10,6 @@ public class CourierCentral : MonoBehaviour
     void Start()
     {
         Hire("Ana", new Car(), new DayShift());
-        Hire("Luis", new Car(), new DayShift());
         Hire("Sofía", new Bike(), new DayShift());
         Hire("Marta", new Car(), new NightShift());
         Hire("Diego", new Bike(), new NightShift());

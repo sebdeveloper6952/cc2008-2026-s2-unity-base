@@ -2,21 +2,24 @@ using UnityEngine;
 
 public class OrderMarker : MonoBehaviour
 {
-    Transform pin, diamond, diamondShape, carrier;
+    const float FoodSize = 6f;
+
+    Transform pin, food, diamond, diamondShape, carrier;
     Vector3 pinRest;
     float seed;
     bool highlighted;
 
-    public static OrderMarker Create(Order order, Transform restaurant, Transform home)
+    public static OrderMarker Create(Order order, Transform restaurant, Transform home, GameObject foodModel)
     {
         var marker = new GameObject($"Order #{order.Id}").AddComponent<OrderMarker>();
         var material = new Material(Resources.Load<Material>("Materials/Marker")) { color = order.Color };
 
         marker.pin = new GameObject("Pickup").transform;
         marker.pin.SetParent(marker.transform, false);
-        Shape(PrimitiveType.Sphere, marker.pin, Vector3.zero, Vector3.one * 7f, material);
-        Shape(PrimitiveType.Cylinder, marker.pin, new Vector3(0f, -5.5f, 0f), new Vector3(0.8f, 3.2f, 0.8f), material);
-        WorldText.Create($"#{order.Id}", marker.pin, new Vector3(0f, 6.2f, 0f), Color.white, 0.5f);
+        Shape(PrimitiveType.Cylinder, marker.pin, Vector3.zero, new Vector3(7.5f, 0.15f, 7.5f), material);
+        if (foodModel != null) marker.food = AddFood(foodModel, marker.pin);
+        else Shape(PrimitiveType.Sphere, marker.pin, Vector3.up * 3f, Vector3.one * FoodSize, material);
+        WorldText.Create($"#{order.Id}", marker.pin, new Vector3(0f, FoodSize + 2f, 0f), Color.white, 0.5f);
         marker.pinRest = restaurant.position + Vector3.up * 20f + Vector3.right * SlotOffset(order.PickupSlot);
 
         marker.diamond = new GameObject("Dropoff").transform;
@@ -55,6 +58,29 @@ public class OrderMarker : MonoBehaviour
         }
         diamond.localScale = Vector3.one * scale;
         diamondShape.Rotate(0f, 90f * Time.deltaTime, 0f, Space.World);
+        if (food != null) food.Rotate(0f, 60f * Time.deltaTime, 0f, Space.World);
+    }
+
+    static Transform AddFood(GameObject model, Transform parent)
+    {
+        var holder = new GameObject("Food").transform;
+        holder.SetParent(parent, false);
+        var food = Instantiate(model, holder);
+        food.transform.localPosition = Vector3.zero;
+
+        var renderers = food.GetComponentsInChildren<Renderer>();
+        Bounds bounds = renderers[0].bounds;
+        foreach (var r in renderers)
+        {
+            bounds.Encapsulate(r.bounds);
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        Vector3 local = holder.InverseTransformPoint(bounds.center);
+        float bottom = holder.InverseTransformPoint(bounds.min).y;
+        food.transform.localPosition = new Vector3(-local.x, -bottom, -local.z);
+        holder.localScale = Vector3.one * (FoodSize / Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z));
+        holder.localPosition = Vector3.up * 0.1f;
+        return holder;
     }
 
     static float SlotOffset(int slot) => (slot + 1) / 2 * 8f * (slot % 2 == 1 ? 1f : -1f);

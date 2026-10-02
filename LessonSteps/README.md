@@ -35,7 +35,8 @@ step's working code. It keeps the `.meta` files, so the scene doesn't lose refer
 | 75–90 | Wrap-up, Java ↔ C#, questions | |
 
 ### 0 · Cars only
-Play. Two cars (Ana, Luis) can't keep up, so orders get lost. Read `CarCourier.cs` with
+Play. One car (Ana) can't keep up, so orders get lost. A courier can take a new order
+while driving back to the central. Read `CarCourier.cs` with
 the class: the first block (`Description`, `Speed`, `Fee`, `ModelPath`) is what depends
 on the car; everything below it is what any courier does.
 

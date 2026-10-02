@@ -132,7 +132,7 @@ public class GameHUD : MonoBehaviour
             Order order = orders[i];
             if (!orderCards.TryGetValue(order, out OrderCard card)) orderCards[order] = card = CreateOrderCard(order);
             card.Root.anchoredPosition = new Vector2(Padding, -HeaderHeight - i * (CardHeight + CardGap));
-            card.Title.text = $"#{order.Id}  {order.From} → {order.To}";
+            card.Title.text = $"#{order.Id}  {order.From} » {order.To}";
             card.Detail.text = $"Q{order.Price} · {order.Km:0.0} km · {Describe(order)}";
             float t = Mathf.Clamp01(order.TimeLeft / order.TimeLimit);
             card.Timer.rectTransform.anchorMax = new Vector2(t, 1f);
@@ -164,7 +164,8 @@ public class GameHUD : MonoBehaviour
             card.Root.anchoredPosition = new Vector2(-Padding, -HeaderHeight - row++ * (CardHeight + CardGap));
             card.Name.text = $"{courier.CourierName}  <size=12><color=#A9B4C6>{courier.Description}</color></size>";
             card.Detail.text = onDuty ? $"{courier.Status} · {courier.Deliveries} entregas" : "Fuera de turno";
-            card.Tag.SetActive(!courier.IsAvailable);
+            var driver = courier.GetComponent<RouteDriver>();
+            card.Tag.SetActive(driver != null && !driver.IsParked);
             card.Fee.text = selected != null && onDuty ? $"Q{Mathf.RoundToInt(courier.Fee(selected.Km))}" : "";
             card.Background.color = onDuty && courier.IsAvailable ? CardColor : CardBusy;
             card.Name.color = onDuty ? TextMain : TextDim;

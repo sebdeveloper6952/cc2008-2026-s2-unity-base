@@ -31,6 +31,7 @@ public abstract class Courier : MonoBehaviour
     public void Deliver(Order order)
     {
         currentOrder = order;
+        StopAllCoroutines();
         StartCoroutine(DeliveryTrip());
     }
 
@@ -44,10 +45,10 @@ public abstract class Courier : MonoBehaviour
         yield return driver.DriveTo(currentOrder.DropoffPoint);
         currentOrder.Complete(Fee(currentOrder.Km));
         Deliveries++;
+        currentOrder = null;
 
         Status = "Regresando";
         yield return driver.ParkAt(parkingSpot);
-        currentOrder = null;
         Status = "Disponible";
     }
 }

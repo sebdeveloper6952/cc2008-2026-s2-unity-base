@@ -5,6 +5,7 @@ using UnityEngine;
 public class RouteDriver : MonoBehaviour
 {
     public float Speed = 10f;
+    public bool IsParked { get; private set; } = true;
     [SerializeField] float turnSpeed = 540f;
     [SerializeField] float stopSeconds = 0.6f;
     [SerializeField] float wheelRadius = 0.45f;
@@ -13,15 +14,18 @@ public class RouteDriver : MonoBehaviour
 
     public IEnumerator DriveTo(Vector3 destination)
     {
+        IsParked = false;
         yield return Follow(RoadNetwork.Instance.Route(transform.position, destination));
         yield return new WaitForSeconds(stopSeconds);
     }
 
     public IEnumerator ParkAt(Transform spot)
     {
+        IsParked = false;
         var path = RoadNetwork.Instance.Route(transform.position, spot.position);
         path.Add(spot.position);
         yield return Follow(path);
+        IsParked = true;
     }
 
     IEnumerator Follow(List<Vector3> path)

@@ -20198,6 +20198,19 @@ MonoBehaviour:
   secondsBetweenOrders: {x: 8, y: 13}
   maxOrders: 6
   startingMoney: 100
+  menu:
+  - restaurant: {fileID: 939278784}
+    food: {fileID: 919132149155446097, guid: 688b4d46c8d2745cea9750a8f678ef5e, type: 3}
+  - restaurant: {fileID: 2146605856}
+    food: {fileID: 919132149155446097, guid: 688b4d46c8d2745cea9750a8f678ef5e, type: 3}
+  - restaurant: {fileID: 202026669}
+    food: {fileID: 919132149155446097, guid: d2fd91699660a442fa945c16f5443d09, type: 3}
+  - restaurant: {fileID: 94089862}
+    food: {fileID: 919132149155446097, guid: d2fd91699660a442fa945c16f5443d09, type: 3}
+  - restaurant: {fileID: 1555891029}
+    food: {fileID: 919132149155446097, guid: 27b1a06b2ee484e84b0b1c8bedbd1d71, type: 3}
+  - restaurant: {fileID: 1887492478}
+    food: {fileID: 919132149155446097, guid: 27b1a06b2ee484e84b0b1c8bedbd1d71, type: 3}
 --- !u!114 &1581100783
 MonoBehaviour:
   m_ObjectHideFlags: 0

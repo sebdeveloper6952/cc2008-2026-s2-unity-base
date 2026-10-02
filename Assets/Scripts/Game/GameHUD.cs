@@ -24,7 +24,7 @@ public class GameHUD : MonoBehaviour
     class CourierCard { public RectTransform Root; public Image Background; public Text Name, Detail, Fee; public GameObject Tag; }
 
     readonly Dictionary<Order, OrderCard> orderCards = new Dictionary<Order, OrderCard>();
-    readonly Dictionary<CarCourier, CourierCard> courierCards = new Dictionary<CarCourier, CourierCard>();
+    readonly Dictionary<Courier, CourierCard> courierCards = new Dictionary<Courier, CourierCard>();
 
     Font font;
     RectTransform ordersPanel, couriersPanel;
@@ -58,7 +58,7 @@ public class GameHUD : MonoBehaviour
         Select(order == selected ? null : order);
     }
 
-    void OnCourierClicked(CarCourier courier)
+    void OnCourierClicked(Courier courier)
     {
         if (selected == null) { ShowToast("Primero elige un pedido"); return; }
         if (!courier.IsOnDuty(GameClock.Instance.IsNight)) { ShowToast($"{courier.CourierName} está fuera de turno"); return; }
@@ -72,7 +72,7 @@ public class GameHUD : MonoBehaviour
         }
     }
 
-    void OnUpgradeClicked(CarCourier courier)
+    void OnUpgradeClicked(Courier courier)
     {
         var upgrade = courier.GetType().GetMethod("Upgrade", System.Type.EmptyTypes);
         if (upgrade == null)
@@ -132,7 +132,7 @@ public class GameHUD : MonoBehaviour
             Order order = orders[i];
             if (!orderCards.TryGetValue(order, out OrderCard card)) orderCards[order] = card = CreateOrderCard(order);
             card.Root.anchoredPosition = new Vector2(Padding, -HeaderHeight - i * (CardHeight + CardGap));
-            card.Title.text = $"#{order.Id}  {order.From} → {order.To}";
+            card.Title.text = $"#{order.Id}  {order.From} » {order.To}";
             card.Detail.text = $"Q{order.Price} · {order.Km:0.0} km · {Describe(order)}";
             float t = Mathf.Clamp01(order.TimeLeft / order.TimeLimit);
             card.Timer.rectTransform.anchorMax = new Vector2(t, 1f);
@@ -145,14 +145,14 @@ public class GameHUD : MonoBehaviour
 
     void RefreshCouriers()
     {
-        List<CarCourier> couriers = central.Couriers;
-        var gone = new List<CarCourier>();
-        foreach (CarCourier courier in courierCards.Keys) if (courier == null || !couriers.Contains(courier)) gone.Add(courier);
-        foreach (CarCourier courier in gone) { Destroy(courierCards[courier].Root.gameObject); courierCards.Remove(courier); }
+        List<Courier> couriers = central.Couriers;
+        var gone = new List<Courier>();
+        foreach (Courier courier in courierCards.Keys) if (courier == null || !couriers.Contains(courier)) gone.Add(courier);
+        foreach (Courier courier in gone) { Destroy(courierCards[courier].Root.gameObject); courierCards.Remove(courier); }
 
         bool night = GameClock.Instance.IsNight;
         int row = 0;
-        foreach (CarCourier courier in couriers)
+        foreach (Courier courier in couriers)
         {
             if (courier == null) continue;
             if (!courierCards.TryGetValue(courier, out CourierCard card))
@@ -164,7 +164,8 @@ public class GameHUD : MonoBehaviour
             card.Root.anchoredPosition = new Vector2(-Padding, -HeaderHeight - row++ * (CardHeight + CardGap));
             card.Name.text = $"{courier.CourierName}  <size=12><color=#A9B4C6>{courier.Description}</color></size>";
             card.Detail.text = onDuty ? $"{courier.Status} · {courier.Deliveries} entregas" : "Fuera de turno";
-            card.Tag.SetActive(!courier.IsAvailable);
+            var driver = courier.GetComponent<RouteDriver>();
+            card.Tag.SetActive(driver != null && !driver.IsParked);
             card.Fee.text = selected != null && onDuty ? $"Q{Mathf.RoundToInt(courier.Fee(selected.Km))}" : "";
             card.Background.color = onDuty && courier.IsAvailable ? CardColor : CardBusy;
             card.Name.color = onDuty ? TextMain : TextDim;
@@ -239,7 +240,7 @@ public class GameHUD : MonoBehaviour
         return card;
     }
 
-    CourierCard CreateCourierCard(CarCourier courier)
+    CourierCard CreateCourierCard(Courier courier)
     {
         var card = new CourierCard();
         card.Root = Anchored(courier.CourierName, couriersPanel, new Vector2(1f, 1f), Vector2.zero, new Vector2(CardWidth, CardHeight));

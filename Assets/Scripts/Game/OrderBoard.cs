@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class OrderBoard : MonoBehaviour
 {
+    [System.Serializable]
+    public class MenuItem
+    {
+        public Transform restaurant;
+        public GameObject food;
+    }
+
     public static OrderBoard Instance { get; private set; }
     public static event System.Action<string> Message;
     public static event System.Action<Order> OrderPlaced;
@@ -13,6 +20,7 @@ public class OrderBoard : MonoBehaviour
     [SerializeField] Vector2 secondsBetweenOrders = new Vector2(8f, 13f);
     [SerializeField] int maxOrders = 6;
     [SerializeField] int startingMoney = 100;
+    [SerializeField] MenuItem[] menu;
 
     public List<Order> Orders { get; } = new List<Order>();
     public int Money { get; private set; }
@@ -28,6 +36,7 @@ public class OrderBoard : MonoBehaviour
 
     readonly List<Transform> restaurants = new List<Transform>();
     readonly List<Transform> homes = new List<Transform>();
+    GameObject[] allFood;
     int nextId = 1;
     float nextOrderAt;
 
@@ -104,7 +113,7 @@ public class OrderBoard : MonoBehaviour
         nextId++;
         order.PickupSlot = FreeSlot(o => o.From == order.From && o.State != OrderState.PickedUp, o => o.PickupSlot);
         order.DropoffSlot = FreeSlot(o => o.To == order.To, o => o.DropoffSlot);
-        order.Marker = OrderMarker.Create(order, restaurant, home);
+        order.Marker = OrderMarker.Create(order, restaurant, home, FoodFor(restaurant));
         Orders.Add(order);
         OrderPlaced?.Invoke(order);
     }
@@ -114,6 +123,15 @@ public class OrderBoard : MonoBehaviour
         int slot = 0;
         while (Orders.Exists(o => sameBuilding(o) && slotOf(o) == slot)) slot++;
         return slot;
+    }
+
+    GameObject FoodFor(Transform restaurant)
+    {
+        if (menu != null)
+            foreach (var item in menu)
+                if (item.restaurant == restaurant && item.food != null) return item.food;
+        if (allFood == null) allFood = Resources.LoadAll<GameObject>("Food");
+        return allFood.Length > 0 ? allFood[Random.Range(0, allFood.Length)] : null;
     }
 
     void Remove(Order order)

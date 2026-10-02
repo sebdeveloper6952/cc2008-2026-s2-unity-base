@@ -2,7 +2,8 @@
 
 Somos la central de una empresa de repartos. Los pedidos aparecen en los restaurantes de la
 ciudad y nosotros decidimos qué repartidor los lleva. Cada repartidor sale de la central,
-recoge el pedido, lo entrega en la casa del cliente y regresa a estacionarse.
+recoge el pedido, lo entrega en la casa del cliente y regresa a estacionarse. Mientras
+regresa, ya se le puede asignar otro pedido.
 
 Durante la clase, el cliente nos va a pedir cambios. Cada paso es uno de esos pedidos.
 
@@ -41,13 +42,13 @@ Una mejora cuesta Q80.
 
 ## Paso 0 · Lo que ya tenemos
 
-Hay dos repartidores en carro, Ana y Luis. Juega unos minutos y lee `CarCourier.cs`.
+Hay una sola repartidora, Ana, en carro. Juega unos minutos y lee `CarCourier.cs`.
 
 **Preguntas**
 1. ¿Qué partes de `CarCourier` dependen de que sea un carro, y cuáles haría cualquier
    repartidor, sin importar su vehículo?
 2. ¿Qué otras clases del proyecto mencionan `CarCourier` por nombre?
-3. Con dos carros, ¿alcanzan a entregar todos los pedidos? ¿Qué le pedirías al cliente?
+3. Con un solo carro, ¿alcanza a entregar todos los pedidos? ¿Qué le pedirías al cliente?
 
 ## Paso 1 · "Queremos bicis"
 
@@ -71,7 +72,7 @@ Hay dos repartidores en carro, Ana y Luis. Juega unos minutos y lee `CarCourier.
 > **Diego** (bici) para el turno de noche. De noche se cobra un recargo de Q5 por entrega.
 
 **Requisitos**
-- De noche, Ana, Luis y Sofía aparecen "Fuera de turno" y no se les puede asignar nada.
+- De noche, Ana y Sofía aparecen "Fuera de turno" y no se les puede asignar nada.
   De día, lo mismo con Marta y Diego.
 - La tarifa de Marta y Diego incluye el recargo.
 - En la lista se distingue quién es del turno de noche.
